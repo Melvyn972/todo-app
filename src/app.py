@@ -31,7 +31,9 @@ def create_todo():
 
 @app.route('/todos/<int:todo_id>', methods=['PUT'])
 def update_todo(todo_id):
-    todo = Todo.query.get_or_404(todo_id)
+    todo = db.session.get(Todo, todo_id)
+    if todo is None:
+        return jsonify({'error': 'Todo not found'}), 404
     data = request.json
     todo.title = data.get('title', todo.title)
     todo.description = data.get('description', todo.description)
@@ -41,7 +43,9 @@ def update_todo(todo_id):
 
 @app.route('/todos/<int:todo_id>', methods=['DELETE'])
 def delete_todo(todo_id):
-    todo = Todo.query.get_or_404(todo_id)
+    todo = db.session.get(Todo, todo_id)
+    if todo is None:
+        return jsonify({'error': 'Todo not found'}), 404
     db.session.delete(todo)
     db.session.commit()
     return '', 204

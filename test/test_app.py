@@ -34,3 +34,38 @@ def test_get_todos(client):
     assert response.status_code == 200
     todos = response.get_json()
     assert len(todos) == 2
+
+def test_end_to_end(client):
+    response = client.post('/todos', json={
+        'title': 'Test Todo',
+        'description': 'Test Description'
+    })
+    assert response.status_code == 201
+    data = response.get_json()
+    todo_id = data['id']
+    assert data['title'] == 'Test Todo'
+    assert data['completed'] == False
+
+    response = client.get('/todos')
+    assert response.status_code == 200
+    todos = response.get_json()
+    assert len(todos) > 0
+
+    updated_data = {
+        'title': 'Updated Todo',
+        'description': 'Updated Description',
+        'completed': True
+    }
+    response = client.put(f'/todos/{todo_id}', json=updated_data)
+    assert response.status_code == 200
+    updated_todo = response.get_json()
+    assert updated_todo['title'] == 'Updated Todo'
+    assert updated_todo['completed'] == True
+
+    response = client.delete(f'/todos/{todo_id}')
+    assert response.status_code == 204
+
+    response = client.get('/todos')
+    assert response.status_code == 200
+    todos = response.get_json()
+    assert len(todos) == 0
