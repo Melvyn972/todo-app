@@ -25,7 +25,7 @@ jobs:
 
       - name: Lancer les tests
         run: |
-          pytest tests/
+          pytest test/
 
   build-and-push:
     needs: test
