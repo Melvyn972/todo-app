@@ -5,9 +5,6 @@
 Pour utiliser la pipeline, configurez ces secrets :
 - `DOCKER_USERNAME`
 - `DOCKER_PASSWORD`
-- `SERVER_IP`
-- `SERVER_USERNAME`
-- `SERVER_SSH_KEY`
 
 ## Développement Local
 
