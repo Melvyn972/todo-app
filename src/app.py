@@ -7,7 +7,10 @@ app = create_app()
 @app.route('/')
 def index():
     todos = Todo.query.all()
-    return render_template('index.html', todos=todos)
+    todos_data = [todo.to_dict() for todo in todos]
+    return render_template('index.html', todos=todos_data)
+
+
 
 @app.route('/todos', methods=['GET'])
 def get_todos():
