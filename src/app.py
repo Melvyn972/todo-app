@@ -6,7 +6,8 @@ app = create_app()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    todos = Todo.query.all()
+    return render_template('index.html', todos=todos)
 
 @app.route('/todos', methods=['GET'])
 def get_todos():

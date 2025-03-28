@@ -4,7 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__,
+                template_folder='templates',
+                static_folder='static')
+
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -13,5 +16,4 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    from . import app as main_app
     return app
