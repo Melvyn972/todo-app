@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="app">
+    <h1>Todo List</h1>
+    <input v-model="newTodo.title" placeholder="Titre de la tâche">
+    <textarea v-model="newTodo.description" placeholder="Description"></textarea>
+    <button @click="addTodo">Ajouter Tâche</button>
+
+    <ul>
+        <li v-for="todo in todos" :key="todo.id">
+            {{ todo.title }}
+            <span v-if="todo.completed">(Terminé)</span>
+            <button @click="toggleTodo(todo)">Basculer</button>
+            <button @click="deleteTodo(todo.id)">Supprimer</button>
+        </li>
+    </ul>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                todos: [],
+                newTodo: { title: '', description: '' }
+            },
+            methods: {
+                fetchTodos() {
+                    fetch('/todos')
+                        .then(response => response.json())
+                        .then(data => this.todos = data);
+                },
+                addTodo() {
+                    fetch('/todos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(this.newTodo)
+                    })
+                        .then(response => response.json())
+                        .then(todo => {
+                            this.todos.push(todo);
+                            this.newTodo = { title: '', description: '' };
+                        });
+                },
+                toggleTodo(todo) {
+                    fetch(`/todos/${todo.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ completed: !todo.completed })
+                    })
+                        .then(response => response.json())
+                        .then(updatedTodo => {
+                            const index = this.todos.findIndex(t => t.id === updatedTodo.id);
+                            this.todos.splice(index, 1, updatedTodo);
+                        });
+                },
+                deleteTodo(id) {
+                    fetch(`/todos/${id}`, { method: 'DELETE' })
+                        .then(() => {
+                            this.todos = this.todos.filter(todo => todo.id !== id);
+                        });
+                }
+            },
+            mounted() {
+                this.fetchTodos();
+            }
+        });
+    </script>
+</div>
+{% endblock %}

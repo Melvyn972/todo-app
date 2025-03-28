@@ -1,0 +1,65 @@
+name: Todo App CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: Installer les dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Lancer les tests
+        run: |
+          pytest tests/
+
+      - name: Vérifier le formatage (flake8)
+        run: |
+          flake8 src/ tests/
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Construire l'image Docker
+        run: |
+          docker build -t todo-app .
+
+      - name: Connexion à Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Pousser l'image sur Docker Hub
+        run: |
+          docker tag todo-app ${{ secrets.DOCKER_USERNAME }}/todo-app:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/todo-app:latest
+
+      - name: Déploiement sur serveur distant (via SSH)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /path/to/todo-app
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
