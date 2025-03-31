@@ -5,7 +5,7 @@
     <h1>Todo List</h1>
     <input v-model="newTodo.title" placeholder="Titre de la tâche">
     <textarea v-model="newTodo.description" placeholder="Description"></textarea>
-    <button @click="addTodo">Ajouter  Tâche</button>
+    <button @click="addTodo">Ajouter Tâche</button>
 
     <ul>
         <li v-for="todo in todos" :key="todo.id">
