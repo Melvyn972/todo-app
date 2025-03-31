@@ -19,7 +19,7 @@ def get_todos():
 
 @app.route('/todos', methods=['POST'])
 def create_todo():
-    data = requeeeeeeedsdsdsdst.json
+    data = request.json
     new_todo = Todo(
         title=data['title'],
         description=data.get('description', ''),
