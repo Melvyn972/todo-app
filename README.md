@@ -1,5 +1,9 @@
 # Todo List Application avec CI/CD
 
+## Lien video
+
+https://transfert.free.fr/9wQIJH2 
+
 ## Configuration des Secrets GitHub
 
 Pour utiliser la pipeline, configurez ces secrets :
